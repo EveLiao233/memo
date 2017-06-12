@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ListView
+        android:id="@+id/add_list"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+    </ListView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="日期\n期末考试"
+        android:id="@+id/date_button"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/add_item1"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="日期"
+            android:id="@+id/textView"
+            android:layout_centerHorizontal="true"
+            style="@style/add_title"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="期末考试，高考，情侣纪念日"
+            android:id="@+id/textView2"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            style="@style/add_detail1"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/time_button"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/add_item2"
+        android:layout_weight="1" >
+
+        <TextView
+            style="@style/add_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="时间"
+            android:id="@+id/textView3"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            style="@style/add_detail2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运动时间，学习时间，工作时间"
+            android:id="@+id/textView4"
+            android:layout_below="@+id/textView3"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:gravity="center"
+        android:id="@+id/in_yours_button"
+        android:background="@drawable/add_item3"
+        android:layout_weight="1" >
+
+        <TextView
+            style="@style/add_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="私人订制"
+            android:id="@+id/textView5"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            style="@style/add_detail3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="减肥，看书"
+            android:id="@+id/textView6"
+            android:layout_below="@+id/textView5"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/eg_button"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@drawable/add_item4"
+        android:layout_weight="1" >
+
+        <TextView
+            style="@style/add_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="demo"
+            android:id="@+id/textView7"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            style="@style/add_detail4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="各种样例"
+            android:id="@+id/textView8"
+            android:layout_below="@+id/textView7"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+</LinearLayout>

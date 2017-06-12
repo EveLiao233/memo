@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:id="@+id/bkg">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp">
+
+        <TextView
+            android:id="@+id/thing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="事件"
+            android:textSize="18sp"
+            android:gravity="left" />
+
+        <TextView
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="88%"
+            android:textSize="18sp"
+            android:gravity="right" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:id="@+id/process_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="270dp"
+            android:layout_height="12dp"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:indeterminateDrawable="@mipmap/bar_pic"
+            android:max="100"
+            android:maxHeight="25dp"
+            android:minHeight="25dp"
+            android:progress="40"
+            android:progressDrawable="@drawable/prograssbar_form"
+            android:layout_alignBottom="@+id/img" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content"
+            android:id="@+id/img"
+            android:layout_alignStart="@+id/process_bar"
+            android:layout_below="@+id/bb1"
+            android:minHeight="35dp"
+            android:paddingBottom="5dp"
+            android:maxHeight="35dp" />
+
+        <TextView
+            android:id="@+id/start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/process_bar"
+            android:text="0"
+            android:layout_alignBottom="@+id/process_bar" />
+
+
+        <TextView
+            android:id="@+id/end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/process_bar"
+            android:text="24"
+            android:layout_alignBottom="@+id/process_bar" />
+
+        <com.cpiz.android.bubbleview.BubbleTextView
+            android:id="@+id/bb1"
+            app:bb_arrowDirection="Down"
+            app:bb_cornerRadius="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textColor="@android:color/white"
+            app:bb_arrowTo="@id/img"
+            android:layout_alignParentTop="true"
+            android:layout_alignEnd="@+id/img"
+            android:textSize="10dp"
+            android:singleLine="true"
+            android:minWidth="25dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

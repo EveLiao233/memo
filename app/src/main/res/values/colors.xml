@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#e64b55</color>
+    <color name="colorPrimaryDark">#cc3746</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#ffffff</color>
+    <color name="shadow">#22000000</color>
+    <color name="add1">#63aca5</color>
+    <color name="add1_bkg">#abd8cc</color>
+    <color name="add2">#e2aa47</color>
+    <color name="add2_bkg">#fee1a1</color>
+    <color name="add3">#d37e44</color>
+    <color name="add3_bkg">#fab98c</color>
+    <color name="add4">#d57737</color>
+    <color name="add4_bkg">#f6a96e</color>
+    <color name="bkg_color1">#ffff99</color>
+    <color name="bkg_color2">#00e8f6a2</color>
+    <color name="bkg_color3">#d1ecac</color>
+    <color name="bkg_color4">#B9E3B5</color>
+    <color name="bkg_color5">#A2DABE</color>
+    <color name="bkg_color6">#8bd1c7</color>
+    <color name="bkg_color7">#74c7d1</color>
+    <color name="bkg_color8">#5DBEDA</color>
+    <color name="bkg_color9">#46B5E3</color>
+    <color name="bkg_color10">#2eacec</color>
+    <color name="bkg_color11">#17A2F6</color>
+    <color name="bkg_green">#67f1ee</color>
+    <color name="bkg_green2">#93d9be</color>
+    <color name="bkg_yellow">#e7e699</color>
+    <color name="bkg_yellow2">#fae481</color>
+    <color name="bkg_red">#ecc39e</color>
+    <color name="bkg_red2">#f2a389</color>
+    <color name="bkg_wel">#fd835b</color>
+    <color name="gray">#848586</color>
+    <color name="bkg_1px">#e9e9e9</color>
+    <color name="black">#030303</color>
+</resources>

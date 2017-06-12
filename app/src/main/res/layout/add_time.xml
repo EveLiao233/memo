@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bkg_time">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="常规设置"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:background="@color/shadow"
+        />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:text="更改事项"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:layout_marginLeft="15dp"
+                android:gravity="left|center" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:hint="请输入事件名称"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:id="@+id/thing_time"
+                android:layout_weight="1"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:text="更改StartTime"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:layout_marginLeft="15dp"
+                android:gravity="left|center" />
+            <Button
+                android:id="@+id/pick_startTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选择开始时间"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:text="更改EndTime"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:layout_marginLeft="15dp"
+                android:gravity="left|center" />
+            <Button
+                android:id="@+id/pick_endTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选择结束时间"
+                android:background="@drawable/shape"
+                style="@style/my_button"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/shadow"
+        android:id="@+id/rela">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择图标"
+            android:id="@+id/textView9"
+            android:paddingTop="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:paddingBottom="10dp"
+            android:paddingStart="10dp"
+            />
+
+        <ImageView
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:id="@+id/hindIcon"
+            android:src="@mipmap/triangle_right"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/icon_view"
+
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:background="@color/shadow">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp">
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img1"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/pokemon1"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img2"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/pokemon2"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img3"
+                        android:layout_column="2"
+                        android:src="@mipmap/pokemon3"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img4"
+                        android:layout_column="3"
+                        android:src="@mipmap/pokemon4"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp" >
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img5"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/pokemon5"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img6"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/pokemon6"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img7"
+                        android:layout_column="2"
+                        android:src="@mipmap/pokemon7"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img8"
+                        android:layout_column="3"
+                        android:src="@mipmap/pokemon8"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp" >
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img9"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/xmas5"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img10"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/xmas6"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img11"
+                        android:layout_column="2"
+                        android:src="@mipmap/xmas7"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img12"
+                        android:layout_column="3"
+                        android:src="@mipmap/xmas8"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp">
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img13"
+                        android:layout_column="0"
+                        android:src="@mipmap/xmas1"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img14"
+                        android:layout_column="1"
+                        android:src="@mipmap/xmas2"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:clickable="true" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img15"
+                        android:clickable="true"
+                        android:layout_column="2"
+                        android:src="@mipmap/xmas3"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img16"
+                        android:layout_column="3"
+                        android:clickable="true"
+                        android:src="@mipmap/xmas4"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp" >
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img17"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/icon1"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img18"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/icon2"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img19"
+                        android:layout_column="2"
+                        android:src="@mipmap/icon3"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img20"
+                        android:layout_column="3"
+                        android:src="@mipmap/icon4"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp" >
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img21"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/animal1"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img22"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/animal2"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img23"
+                        android:layout_column="2"
+                        android:src="@mipmap/animal3"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img24"
+                        android:layout_column="3"
+                        android:src="@mipmap/animal4"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="false"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp" >
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img25"
+                        android:layout_column="0"
+                        android:clickable="true"
+                        android:src="@mipmap/halloween1"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img26"
+                        android:clickable="true"
+                        android:layout_column="1"
+                        android:src="@mipmap/halloween2"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img27"
+                        android:layout_column="2"
+                        android:src="@mipmap/halloween3"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:clickable="true"
+                        android:layout_marginRight="5dp" />
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:id="@+id/img28"
+                        android:layout_column="3"
+                        android:src="@mipmap/halloween4"
+                        android:clickable="true"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
