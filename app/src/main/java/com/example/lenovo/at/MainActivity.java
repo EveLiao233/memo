@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_layout);
         handler.post(myRunnable);
 
+        initialToolbar();
+        initialAvatar();
+
         main_list = (ListView) findViewById(R.id.main_list);
         AffairList = mydb.getAllData();  //获取全部数据，存入list中
         affairAdapter = new AffairAdapter(getApplicationContext(), AffairList);
@@ -287,6 +290,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Toast.makeText(this,
+                        "You clicked on the Application icon",
+                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, ChooseAvatar.class);
+                startActivity(intent);
+                mydb.close();
+                break;
             case R.id.plus:
                 Intent intent = new Intent(MainActivity.this, AddActivity.class);
                 startActivity(intent);
@@ -351,6 +362,36 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return 0;
+    }
+
+
+    private void initialAvatar() {
+        iv_avatar = (ImageView)findViewById(R.id.iv_avatar);
+        iv_avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ChooseAvatar.class);
+                startActivity(intent);
+            }
+        });
+        setAvatar();
+    }
+
+    private void initialToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+    }
+
+    private void setAvatar() {
+        try (FileInputStream fis = openFileInput("avatar.png")) {
+            byte[] contents = new byte[fis.available()];
+            fis.read(contents);
+            fis.close();
+            iv_avatar.setImageBitmap(BitmapFactory.decodeByteArray(contents, 0, contents.length));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private Handler handler = new Handler();
