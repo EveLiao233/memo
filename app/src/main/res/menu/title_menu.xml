@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="天气"
+        android:title="分享"
         android:id="@+id/weather_menu"
-        android:icon="@mipmap/add"
+        android:icon="@mipmap/share"
         app:showAsAction="always">
     </item>
 

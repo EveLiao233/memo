@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lenovo.at">
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -51,8 +51,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AddSpecial"
-android:windowSoftInputMode="adjustPan">
+        <activity android:name=".AddSpecial" android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -65,13 +64,9 @@ android:windowSoftInputMode="adjustPan">
         </activity>
 
         <receiver
-            android:name=".StaticReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="STATICACTION" />
-            </intent-filter>
-        </receiver>
+            android:name=".AlarmReceiver"
+            android:process=":remote"/>
+
 
     </application>
 

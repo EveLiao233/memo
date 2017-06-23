@@ -1,8 +1,11 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -80,7 +83,7 @@ public class AddDDL extends AppCompatActivity {
             //thing_ddl.setVisibility(View.GONE);
             pick_startDate.setText(bl.getString("start"));
             pick_endDate.setText(bl.getString("end"));
-           ddl_remarks.setText(bl.getString("remarks"));
+            ddl_remarks.setText(bl.getString("remarks"));
             thing_ddl.setText(bl.getString("thing"));
             thing_ddl.setEnabled(false);
             icon = bl.getInt("icon");
@@ -208,7 +211,6 @@ public class AddDDL extends AppCompatActivity {
         });
 
 
-
         chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -248,6 +250,7 @@ public class AddDDL extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     /**
@@ -342,10 +345,10 @@ public class AddDDL extends AppCompatActivity {
         if ((pick_startDate.getText() != null) && (pick_endDate.getText() != null)) {
             try
             {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH) + 1;
-                int date = calendar.get(Calendar.DATE);
+                Calendar calendar1 = Calendar.getInstance();
+                int year = calendar1.get(Calendar.YEAR);
+                int month = calendar1.get(Calendar.MONTH) + 1;
+                int date = calendar1.get(Calendar.DATE);
                 String date_current = year + "-" + ((month + 1) < 10 ? "0" + month : month) + "-"
                         + ((date < 10) ? "0" + date : date) + " 00:00:00";
                 Date date_start = format.parse(pick_startDate.getText().toString() + " 00:00:00");
@@ -373,6 +376,17 @@ public class AddDDL extends AppCompatActivity {
         startActivity(Intent.createChooser(sendIntent, "???"));
     }
 
+    // 将string类型的日期改为绝对时间（时间戳
+    long str2timeStamp(String date) {
+        try {
+            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " 20:00"));
+            return calendar.getTimeInMillis();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     //处理标题栏
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -385,13 +399,50 @@ public class AddDDL extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // 从pick_endTime中获取的时间转为yyyy-MM-dd 20:00（前一天晚上八点）
+        long timeStamp = str2timeStamp(pick_endDate.getText().toString());
 
         switch (item.getItemId()) {
             case R.id.add:
                 if (bl != null) {
                     int pro = CalculatePro();
+
+                    // 获取item
+                    Cursor cursor = mydb.getTask(thing_ddl.getText().toString());
+                    cursor.moveToNext();
+                    // 旧的时间戳
+                    long oldTimeStamp = cursor.getLong(6);
+                    int ddl_code = (int) (oldTimeStamp / 1000); // 旧时间戳/1000 （id
+                    String itemName = cursor.getString(0); // 名称
+                    int icon_id = cursor.getInt(5); // icon id
+                    // 旧的PendingIntent
+                    PendingIntent ddl_operation = PendingIntent.getBroadcast(this,
+                            ddl_code, new Intent(this, AlarmReceiver.class).
+                                    putExtra("id", ddl_code).
+                                    putExtra("thing_time", itemName).
+                                    putExtra("icon_id", icon_id),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    // 取消旧的ddl_operation
+                    am.cancel(ddl_operation);
+
+                    // 创建新的ddl_operation
+                    ddl_code = (int) (timeStamp / 1000);
+                    ddl_operation = PendingIntent.getBroadcast(this, ddl_code,
+                            new Intent(this, AlarmReceiver.class).
+                                    putExtra("id", ddl_code).
+                                    putExtra("thing_time", itemName).
+                                    putExtra("icon_id", icon),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    calendar.setTimeInMillis(timeStamp);
+                    // 设置AlarmManager在对应的时间启动Activity
+                    am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), ddl_operation);
+
+                    // 更新数据库
                     mydb.updateOneData(new Affair(bl.getString("thing"), pro, pick_startDate.getText().toString(),
-                            pick_endDate.getText().toString(), CATEGORY_FIRST, icon));
+                            pick_endDate.getText().toString(), CATEGORY_FIRST, icon, ddl_remarks.getText().toString(), timeStamp));
+
                     finish();
                 } else {
                     if (thing_ddl.getText().toString().isEmpty()) {
@@ -404,13 +455,34 @@ public class AddDDL extends AppCompatActivity {
                     } else {
                         int pro = CalculatePro();
                         if (mydb.insertOneData(new Affair(thing_ddl.getText().toString(), pro, pick_startDate.getText().toString(),
-                                pick_endDate.getText().toString(), CATEGORY_FIRST, icon))) {
+                                pick_endDate.getText().toString(), CATEGORY_FIRST, icon, ddl_remarks.getText().toString(), timeStamp))) {
+
+                            // 获取item
+                            Cursor cursor = mydb.getTask(thing_ddl.getText().toString());
+                            cursor.moveToNext();
+                            String itemName = cursor.getString(0); // 获取名称
+                            int icon_id = cursor.getInt(5); // 获取icon的值
+                            int ddl_code = (int) (timeStamp / 1000); // 绝对时间/1000
+                            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+                            PendingIntent ddl_operation = PendingIntent.getBroadcast(this, ddl_code,
+                                    new Intent(this, AlarmReceiver.class).
+                                            putExtra("id", ddl_code). // 绝对时间/1000作为id
+                                            putExtra("thing_time", itemName). // 该事项名称
+                                            putExtra("icon_id", icon_id), // 对应icon作为LargeIcon
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            calendar.setTimeInMillis(timeStamp);
+                            // 设置AlarmManager在对应的时间启动Activity
+                            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), ddl_operation);
+
                             finish();
                         } else {
                             Toast.makeText(AddDDL.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
                         }
                     }
-                    break;
+                }
+                break;
             case R.id.share_menu:
                 share();
                 break;

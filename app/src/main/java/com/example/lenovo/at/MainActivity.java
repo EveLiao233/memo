@@ -1,11 +1,15 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -22,7 +26,9 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TABLE_NAME = "BirthNote";
     private static final int DB_VERSION = 1;
 
-    private static int CATEGORY_FIRST = 0;
-    private static int CATEGORY_SECOND = 1;
-    private static int CATEGORY_THIRD = 2;
-    private static int CATEGORY_FOURTH = 3;
+    private static int CATEGORY_DDL = 0;
+    private static int CATEGORY_TIME = 1;
+    private static int CATEGORY_IN_YOURS = 2;
+    private static int CATEGORY_DEMO = 3;
 
     private ListView main_list;
     private myDB mydb = new myDB(this, DB_NAME, null, DB_VERSION);
@@ -72,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String things = "";
-    Intent intent = new Intent("STATICACTION");
+    //Intent intent = new Intent("STATICACTION");
     Boolean isInYours = true;
 
     // 网络服务地址
@@ -82,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_CONTENT = 0;
 
     private String w = "";
+    private ImageView iv_avatar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,16 +114,17 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString("thing", AffairList.get(position).getThing());
                 bundle.putString("start", AffairList.get(position).getStart_time());
                 bundle.putString("end", AffairList.get(position).getEnd_time());
+                bundle.putString("remarks", AffairList.get(position).getRemarks());
                 bundle.putInt("icon", AffairList.get(position).getIcon());
-                if (AffairList.get(position).getCategory() == CATEGORY_FIRST) {
+                if (AffairList.get(position).getCategory() == CATEGORY_DDL) {
                     Intent intent = new Intent(MainActivity.this, AddDDL.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
-                } else if (AffairList.get(position).getCategory() == CATEGORY_SECOND) {
+                } else if (AffairList.get(position).getCategory() == CATEGORY_TIME) {
                     Intent intent = new Intent(MainActivity.this, AddTime.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
-                } else if (AffairList.get(position).getCategory() == CATEGORY_THIRD) {
+                } else if (AffairList.get(position).getCategory() == CATEGORY_IN_YOURS) {
                     Intent intent = new Intent(MainActivity.this, AddInYours.class);
                     bundle.putString("process", AffairList.get(position).getProcess() + "");
                     intent.putExtras(bundle);
@@ -136,7 +146,26 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+                        if (AffairList.get(position).getCategory() == CATEGORY_DDL
+                                || AffairList.get(position).getCategory() == CATEGORY_TIME) {
+                            long timeStamp = AffairList.get(position).getTimeStamp(); // 时间戳
+                            int ddl_code = (int) (timeStamp / 1000); // id
+                            String itemName = AffairList.get(position).getThing();// 名称
+                            int icon_id = AffairList.get(position).getIcon();// icon
+                            // 旧ddl_operation
+                            PendingIntent ddl_operation = PendingIntent.getBroadcast(MainActivity.this,
+                                    ddl_code, new Intent(MainActivity.this, AlarmReceiver.class).
+                                            putExtra("id", ddl_code).
+                                            putExtra("thing_time", itemName).
+                                            putExtra("icon_id", icon_id),
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+                            am.cancel(ddl_operation); // 取消ddl_operation
+                        }
+                        // 从数据库中删除
                         mydb.deleteOneData(AffairList.get(position));
+                        // 从链表中删除
                         AffairList.remove(position);
                         affairAdapter.notifyDataSetChanged();
                     }
@@ -151,41 +180,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        final Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
-        //广播(1214)
-        Handler handler_board = new Handler();
-        handler_board.postDelayed(new Runnable() {
-            public void run() {
-                Bundle bundle = new Bundle();
-                things = "";
-                if (AffairList != null) {
-                    for (int i = 0; i < AffairList.size(); i++) {
-                        isInYours = true;
-                        if (AffairList.get(i).getCategory() != CATEGORY_THIRD)
-                            isInYours = false;
-                        if (!isInYours && AffairList.get(i).getProcess() >= 75) {
-                            things = things + AffairList.get(i).getThing() + " ";
-                        } else if (isInYours) {
-                            int current = AffairList.get(i).getProcess();
-                            int start = Integer.parseInt(AffairList.get(i).getStart_time());
-                            int end = Integer.parseInt(AffairList.get(i).getEnd_time());
-                            double progress = (current - start) / (end - start);
-                            //System.out.println("1!!!!!!!!!!!!!!" + current + " + " + start + " " + end);
-                            if (progress >= 0.75)
-                                things = things + AffairList.get(i).getThing() + " ";
-                        }
-                    }
-                    if (things.length() > 0) {
-                        bundle.putString("things", things);
-                        intent.putExtras(bundle);
-                        sendBroadcast(intent);
-                        vibrator.vibrate(300);
-                    }
-                }
-            }
-        }, 500);
     }
 
     public void setWeather() {
@@ -194,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         if (networkInfo == null || !networkInfo.isAvailable()) {
             Toast.makeText(MainActivity.this, getResources().getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
         } else {
-            // 发送HTTP请求
             sendRequestWithHttpURLConnection();
         }
     }
@@ -207,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 HttpURLConnection connection = null;
                 try {
-                    /*HTTP请求操作*/
+                    //HTTP请求操作
                     // 建立Http连接
                     Log.i("key", "Begin the connection");
                     String current_url = url + "?cityname=guangzhou";
@@ -299,9 +292,12 @@ public class MainActivity extends AppCompatActivity {
                 mydb.close();
                 break;
             case R.id.plus:
-                Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivity(intent);
+                Intent intent_ = new Intent(MainActivity.this, AddActivity.class);
+                startActivity(intent_);
                 mydb.close();
+                break;
+            case R.id.weather_menu:
+                setWeather();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -364,7 +360,6 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
-
     private void initialAvatar() {
         iv_avatar = (ImageView)findViewById(R.id.iv_avatar);
         iv_avatar.setOnClickListener(new View.OnClickListener() {
@@ -401,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Calendar calendar = Calendar.getInstance();
                 for (int i = 0; i < affairAdapter.getCount(); i++) {
-                    if (AffairList.get(i).getCategory() == CATEGORY_FIRST) {
+                    if (AffairList.get(i).getCategory() == CATEGORY_DDL) {
                         int year = calendar.get(Calendar.YEAR);
                         int month = calendar.get(Calendar.MONTH) + 1;
                         int date = calendar.get(Calendar.DATE);
@@ -412,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                         Date date_cur = format.parse(date_current);
                         int pro = differentDays(date_start, date_cur) * 100 / differentDays(date_start, date_end);
                         AffairList.get(i).setProcess(pro);
-                    } else if (AffairList.get(i).getCategory() == CATEGORY_SECOND) {
+                    } else if (AffairList.get(i).getCategory() == CATEGORY_TIME) {
                         int hour = calendar.get(Calendar.HOUR_OF_DAY);
                         int minute = calendar.get(Calendar.MINUTE);
                         String date_current = "2016-11-22 " + (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) + ":00";
@@ -421,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                         Date date_cur = format.parse(date_current);
                         int pro = differentTime(date_start, date_cur) * 100 / differentTime(date_start, date_end);
                         AffairList.get(i).setProcess(pro);
-                    } else if (AffairList.get(i).getCategory() == CATEGORY_FOURTH) {
+                    } else if (AffairList.get(i).getCategory() == CATEGORY_DEMO) {
                         int pro = CalculatePro(AffairList.get(i).getThing());
                         AffairList.get(i).setProcess(pro);
                     }
@@ -449,5 +444,6 @@ public class MainActivity extends AppCompatActivity {
         AffairList = mydb.getAllData();  //获取全部数据，存入list中
         affairAdapter = new AffairAdapter(getApplicationContext(), AffairList);
         main_list.setAdapter(affairAdapter);
+        setAvatar();
     }
 }

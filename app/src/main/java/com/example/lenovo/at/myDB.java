@@ -1,4 +1,4 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,7 +31,8 @@ public class myDB extends SQLiteOpenHelper {
                 "  [end_time] TEXT NOT NULL," +
                 "  [category] INTEGER NOT NULL," +
                 "  [icon] INTEGER NOT NULL," +
-                "  [remarks] TEXT NOT NULL";
+                "  [remarks] TEXT NOT NULL," +
+                "  [time_stamp] long DEFAULT 0)";
         db.execSQL(CREATE_TABLE);
     }
     @Override
@@ -51,6 +52,7 @@ public class myDB extends SQLiteOpenHelper {
             cv.put("category", affair.getCategory());
             cv.put("icon", affair.getIcon());
             cv.put("remarks", affair.getRemarks());
+            cv.put("time_stamp", affair.getTimeStamp());
             db.insert(TABLE_NAME, null, cv);
             db.close();
             return true;
@@ -74,6 +76,7 @@ public class myDB extends SQLiteOpenHelper {
         cv.put("process", affair.getProcess());
         cv.put("icon", affair.getIcon());
         cv.put("remarks", affair.getRemarks());
+        cv.put("time_stamp", affair.getTimeStamp());
         long a = db.update(TABLE_NAME, cv, "thing=" + '"' + affair.getThing() +'"', null);
         db.close();
         return a;
@@ -94,6 +97,7 @@ public class myDB extends SQLiteOpenHelper {
             AffairList.get(i).setCategory(cursor.getInt(cursor.getColumnIndex("category")));
             AffairList.get(i).setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
             AffairList.get(i).setRemarks(cursor.getString(cursor.getColumnIndex("remarks")));
+            AffairList.get(i).setTimeStamp(cursor.getLong(cursor.getColumnIndex("time_stamp")));
             cursor.moveToNext();
         }
         return AffairList;

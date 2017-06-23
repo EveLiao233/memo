@@ -1,4 +1,4 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -24,13 +24,16 @@ public class AddInYours  extends AppCompatActivity {
     private EditText start_customize;
     private EditText cur_customize;
     private EditText end_customize;
+    private EditText customized_remarks;
     private Intent intent;
     private Bundle bl;
 
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
-    private boolean iconIsChecked = false;
-    private ImageView hindIcon;
+    private boolean hideIconIsChecked = false;
+    private boolean hidePSIsChecked = false;
+    private ImageView hideIcon;
+    private ImageView hidePS;
     private ScrollView icon_view;
     private RelativeLayout chooseIcon;
     private RelativeLayout addPS;
@@ -197,8 +200,8 @@ public class AddInYours  extends AppCompatActivity {
                 }
             }
         });
-    }
 
+    }
 
     // 分享
     public void share() {
@@ -230,7 +233,8 @@ public class AddInYours  extends AppCompatActivity {
             case R.id.add:
                 if(bl != null) {
                     mydb.updateOneData(new Affair(bl.getString("thing"), Integer.parseInt(cur_customize.getText().toString()),
-                            start_customize.getText().toString(), end_customize.getText().toString(), CATEGORY_THIRD, icon));
+                            start_customize.getText().toString(), end_customize.getText().toString(),
+                            CATEGORY_THIRD, icon, customized_remarks.getText().toString(), 0));
                     finish();
                 } else {
                     if (thing_customize.getText().toString().isEmpty()) {
@@ -245,11 +249,12 @@ public class AddInYours  extends AppCompatActivity {
                         Toast.makeText(AddInYours.this, "输入数据不合理", Toast.LENGTH_LONG).show();
                     } else {
                         if (mydb.insertOneData(new Affair(thing_customize.getText().toString(), Integer.parseInt(cur_customize.getText().toString()),
-                                start_customize.getText().toString(), end_customize.getText().toString(), CATEGORY_THIRD, icon))) {
+                                start_customize.getText().toString(), end_customize.getText().toString(),
+                                CATEGORY_THIRD, icon, customized_remarks.getText().toString(), 0))) {
                             finish();
                         } else {
                             Toast.makeText(AddInYours.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
-                       }
+                        }
                     }
                 }
                 break;

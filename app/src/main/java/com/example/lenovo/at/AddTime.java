@@ -1,12 +1,16 @@
 ﻿package com.example.lenovo.at;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -26,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by lenovo on 2016/12/11.
@@ -46,7 +51,7 @@ public class AddTime extends AppCompatActivity {
 
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
-    private boolean iconIsChecked = false;
+    private boolean hideIconIsChecked = false;
     private boolean hidePSIsChecked = false;
     private ImageView hideIcon;
     private ImageView hidePS;
@@ -62,6 +67,7 @@ public class AddTime extends AppCompatActivity {
 
     private int mHour;
     private int mMinute;
+    private Calendar calendar = Calendar.getInstance();
     private Menu mMenu;
 
     @Override
@@ -79,8 +85,8 @@ public class AddTime extends AppCompatActivity {
             pick_startTime.setText(bl.getString("start"));
             pick_endTime.setText(bl.getString("end"));
             thing_time.setText(bl.getString("thing"));
-            time_remarks.setText(bl.getString("remarks"));
             thing_time.setEnabled(false);
+            time_remarks.setText(bl.getString("remarks"));
             icon = bl.getInt("icon");
         }
 
@@ -335,9 +341,9 @@ public class AddTime extends AppCompatActivity {
         if ((pick_startTime.getText() != null) && (pick_endTime.getText() != null)) {
             try
             {
-                Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
+                Calendar calendar1 = Calendar.getInstance();
+                int hour = calendar1.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar1.get(Calendar.MINUTE);
                 String date_current = "2016-11-22 " + (hour < 10 ? "0" + hour : hour) + ":" + (minute < 10 ? "0" + minute : minute) + ":00";
                 Date date_start = format.parse("2016-11-22 " + pick_startTime.getText().toString() + ":00");
                 Date date_end = format.parse("2016-11-22 " + pick_endTime.getText().toString() + ":00");
@@ -366,6 +372,20 @@ public class AddTime extends AppCompatActivity {
         startActivity(Intent.createChooser(sendIntent, "???"));
     }
 
+    // 将string改为绝对时间（时间戳
+    long str2timeStamp(String time) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+            String str = formatter.format(curDate);
+            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(str + " " + time));
+            return calendar.getTimeInMillis();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     //处理标题栏
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -378,12 +398,50 @@ public class AddTime extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // 从pick_endTime中获取的时间转为yyyy-MM-dd（当天） HH:MM格式
+        long timeStamp = str2timeStamp(pick_endTime.getText().toString());
+
         switch (item.getItemId()) {
             case R.id.add:
                 if(bl != null) {
                     int pro = CalculatePro();
+
+                    // 获取item
+                    Cursor cursor = mydb.getTask(thing_time.getText().toString());
+                    cursor.moveToNext();
+                    // 旧的时间戳
+                    long oldTimeStamp = cursor.getLong(6);
+                    int ddl_code = (int) (oldTimeStamp / 1000); // 旧时间戳/1000 （id
+                    String itemName = cursor.getString(0); // 名称
+                    int icon_id = cursor.getInt(5); // icon id
+                    // 旧的PendingIntent
+                    PendingIntent ddl_operation = PendingIntent.getBroadcast(this,
+                            ddl_code, new Intent(this, AlarmReceiver.class).
+                                    putExtra("id", ddl_code).
+                                    putExtra("thing_time", itemName).
+                                    putExtra("icon_id", icon_id),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    // 取消旧的ddl_operation
+                    am.cancel(ddl_operation);
+
+                    // 创建新的ddl_operation
+                    ddl_code = (int) (timeStamp / 1000);
+                    ddl_operation = PendingIntent.getBroadcast(this, ddl_code,
+                            new Intent(this, AlarmReceiver.class).
+                                    putExtra("id", ddl_code).
+                                    putExtra("thing_time", itemName).
+                                    putExtra("icon_id", icon),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    calendar.setTimeInMillis(timeStamp);
+                    // 设置AlarmManager在对应的时间启动Activity
+                    am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), ddl_operation);
+
+                    // 更新数据库
                     mydb.updateOneData(new Affair(bl.getString("thing"), pro, pick_startTime.getText().toString(),
-                            pick_endTime.getText().toString(), CATEGORY_SECOND, icon));
+                            pick_endTime.getText().toString(), CATEGORY_SECOND,
+                            icon, time_remarks.getText().toString(), timeStamp));
                     finish();
                 } else {
                     if (thing_time.getText().toString().isEmpty()) {
@@ -396,17 +454,38 @@ public class AddTime extends AppCompatActivity {
                     } else {
                         int pro = CalculatePro();
                         if (mydb.insertOneData(new Affair(thing_time.getText().toString(), pro, pick_startTime.getText().toString(),
-                                pick_endTime.getText().toString(), CATEGORY_SECOND, icon))) {
+                                pick_endTime.getText().toString(), CATEGORY_SECOND,
+                                icon, time_remarks.getText().toString(), timeStamp))) {
+
+                            // 获取item
+                            Cursor cursor = mydb.getTask(thing_time.getText().toString());
+                            cursor.moveToNext();
+                            String itemName = cursor.getString(0); // 获取名称
+                            int icon_id = cursor.getInt(5); // 获取icon的值
+                            int ddl_code = (int) (timeStamp / 1000); // 绝对时间/1000
+                            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+                            PendingIntent ddl_operation = PendingIntent.getBroadcast(this, ddl_code,
+                                    new Intent(this, AlarmReceiver.class).
+                                            putExtra("id", ddl_code). // 绝对时间/1000作为id
+                                            putExtra("thing_time", itemName). // 该事项名称
+                                            putExtra("icon_id", icon_id), // 对应icon作为LargeIcon
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            calendar.setTimeInMillis(timeStamp);
+                            // 设置AlarmManager在对应的时间启动Activity
+                            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), ddl_operation);
+
                             finish();
                         } else {
                             Toast.makeText(AddTime.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
                         }
                     }
-                    break;
+                }
+                break;
             case R.id.share_menu:
                 share();
                 break;
-        }
         }
         return super.onOptionsItemSelected(item);
     }

@@ -10,15 +10,19 @@ public class Affair {
     private String end_time;
     private int category;
     private int icon;
+    private String remarks;
+    private long timeStamp;
 
     public Affair(){}
-    public Affair(String thing, int process, String start_time, String end_time, int category, int icon) {
+    public Affair(String thing, int process, String start_time, String end_time, int category, int icon, String remarks, long timeStamp) {
         this.thing = thing;
         this.process = process;
         this.start_time =start_time;
         this.end_time = end_time;
         this.category = category;
         this.icon = icon;
+        this.remarks = remarks;
+        this.timeStamp = timeStamp;
     }
 
     public void setThing(String thing) {
@@ -35,6 +39,10 @@ public class Affair {
     }
     public void setCategory(int category) { this.category = category; }
     public void setIcon(int icon) { this.icon = icon; }
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+    public void setTimeStamp(long timeStamp) { this.timeStamp = timeStamp; }
 
     public String getThing() {
         return thing;
@@ -50,4 +58,8 @@ public class Affair {
     }
     public int getCategory() { return category; }
     public int getIcon() {return icon;}
+    public String getRemarks() {
+        return remarks;
+    }
+    public long getTimeStamp() { return timeStamp; }
 }

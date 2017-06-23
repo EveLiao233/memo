@@ -1,4 +1,4 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -52,6 +52,7 @@ public class AddSpecial  extends AppCompatActivity {
     private int Process;
     private EditText special_remarks;
     private Menu mMenu;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,7 +118,7 @@ public class AddSpecial  extends AppCompatActivity {
      */
     private void initializeViews(){
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
-        
+
         special_remarks = (EditText) findViewById(R.id.special_remarks);
 
         hideIcon = (ImageView) findViewById(R.id.hideIcon);
@@ -158,6 +159,7 @@ public class AddSpecial  extends AppCompatActivity {
         for (ImageView i : myImg)
             i.setOnClickListener(myImgListener);
 
+
         chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,7 +199,6 @@ public class AddSpecial  extends AppCompatActivity {
                 }
             }
         });
-
 
     }
 
@@ -314,9 +315,11 @@ public class AddSpecial  extends AppCompatActivity {
             case R.id.add:
                 int pro = CalculatePro();
                 if (bl.getInt("icon") != -1) {
-                    mydb.updateOneData(new Affair(Thing, pro, bl.getString("start"), bl.getString("end"), CATEGORY_FOURTH, icon));
+                    mydb.updateOneData(new Affair(Thing, pro, bl.getString("start"), bl.getString("end"),
+                            CATEGORY_FOURTH, icon, special_remarks.getText().toString(), 0));
                 } else {
-                    if (mydb.insertOneData(new Affair(Thing, pro, Start, End, CATEGORY_FOURTH, icon))) {
+                    if (mydb.insertOneData(new Affair(Thing, pro, Start, End, CATEGORY_FOURTH,
+                            icon, special_remarks.getText().toString(), 0))) {
                         finish();
                     } else {
                         Toast.makeText(AddSpecial.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
