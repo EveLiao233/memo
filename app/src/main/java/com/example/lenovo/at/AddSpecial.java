@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +39,7 @@ import java.util.Date;
  */
 public class AddSpecial  extends AppCompatActivity {
     private static final String DB_NAME = "myDB.db";
-    private static final String TABLE_NAME = "BirthNote";
+    private static final String TABLE_NAME = "Memo";
     private static final int DB_VERSION = 1;
     private myDB mydb;
 
