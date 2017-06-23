@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     Boolean isInYours = true;
 
     // 网络服务地址
-    private static final String url = "http://apis.baidu.com/heweather/weather/free";
+    private static final String url = "http://apistore.baidu.com/microservice/weather";
     private ConnectivityManager connManager;
     private NetworkInfo networkInfo;
     private static final int UPDATE_CONTENT = 0;
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     /*HTTP请求操作*/
                     // 建立Http连接
                     Log.i("key", "Begin the connection");
-                    String current_url = url + "?city=广州";
+                    String current_url = url + "?cityname=guangzhou";
                     connection = (HttpURLConnection) (new URL(current_url).openConnection());
                     // 设置访问方法和时间设置
                     connection.setRequestMethod("GET");
@@ -248,13 +248,11 @@ public class MainActivity extends AppCompatActivity {
     public String parserJSON (String response) throws JSONException, IOException {
         String weather = new String();
         JSONObject jsonObject = new JSONObject(response);
-        JSONArray result = jsonObject.getJSONArray("HeWeather data service 3.0");
-        JSONObject jo = result.getJSONObject(0);
-        String status = jo.getString("status");
+        String status = jsonObject.getString("errMsg");
         // 查询城市存在时
-        if (status.contains("ok")) {
+        if (status.contains("success")) {
             // 天气情况描述
-            weather = jo.getJSONObject("now").getJSONObject("cond").getString("txt");
+            weather = jsonObject.getJSONObject("retData").getString("weather");
             return weather;
         }
         return null;
@@ -264,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         setWeather();
+        boolean weatherExist = true;
         getMenuInflater().inflate(R.menu.title_menu, menu);
         if (w.contains("雨")) {
             menu.findItem(R.id.weather_menu).setIcon(R.mipmap.rain);
@@ -276,9 +275,12 @@ public class MainActivity extends AppCompatActivity {
         } else if (w.contains("雪")) {
             menu.findItem(R.id.weather_menu).setIcon(R.mipmap.snow);
         } else {
+            weatherExist = false;
             menu.findItem(R.id.weather_menu).setIcon(R.mipmap.windy);
+            menu.findItem(R.id.weather_menu).setTitle("获取失败");
         }
-        menu.findItem(R.id.weather_menu).setTitle(w);
+        if (weatherExist)
+            menu.findItem(R.id.weather_menu).setTitle(w);
         return true;
     }
 
