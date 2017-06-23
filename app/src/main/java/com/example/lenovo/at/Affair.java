@@ -62,4 +62,10 @@ public class Affair {
         return remarks;
     }
     public long getTimeStamp() { return timeStamp; }
+
+    @Override
+    public boolean equals(Object obj) {
+        Affair s = (Affair)obj;
+        return thing.equals(s.thing);
+    }
 }

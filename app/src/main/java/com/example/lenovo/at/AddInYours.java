@@ -1,6 +1,8 @@
 package com.example.lenovo.at;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +16,16 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -45,12 +57,19 @@ public class AddInYours  extends AppCompatActivity {
     private Menu mMenu;
 
     private static int CATEGORY_THIRD = 2;
+    private static final String url = "http://172.18.69.108:8080";
+    private String SynchronizeResult = "同步失败";
+    private int userId = -1;
     
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_in_yours);
-        
+
+        //获取用户ID
+        SharedPreferences sharedPreferences= getSharedPreferences("User", Context.MODE_PRIVATE);
+        userId = sharedPreferences.getInt("userId", -1);
+
         //初始化控件
         initializeViews();
         //获取到上一个页面传过来的Intent
@@ -235,6 +254,11 @@ public class AddInYours  extends AppCompatActivity {
                     mydb.updateOneData(new Affair(bl.getString("thing"), Integer.parseInt(cur_customize.getText().toString()),
                             start_customize.getText().toString(), end_customize.getText().toString(),
                             CATEGORY_THIRD, icon, customized_remarks.getText().toString(), 0));
+                    String response = AddEvent("/memo/user/changeEvent", thing_customize.getText().toString(),
+                            start_customize.getText().toString(), end_customize.getText().toString(),
+                            customized_remarks.getText().toString(), Integer.parseInt(cur_customize.getText().toString()),
+                            CATEGORY_THIRD, icon, "0");
+                    Toast.makeText(AddInYours.this, response, Toast.LENGTH_LONG).show();
                     finish();
                 } else {
                     if (thing_customize.getText().toString().isEmpty()) {
@@ -251,6 +275,11 @@ public class AddInYours  extends AppCompatActivity {
                         if (mydb.insertOneData(new Affair(thing_customize.getText().toString(), Integer.parseInt(cur_customize.getText().toString()),
                                 start_customize.getText().toString(), end_customize.getText().toString(),
                                 CATEGORY_THIRD, icon, customized_remarks.getText().toString(), 0))) {
+                            String response = AddEvent("/memo/user/addEvent", thing_customize.getText().toString(), start_customize.getText().toString(),
+                                    end_customize.getText().toString(), customized_remarks.getText().toString(),
+                                    Integer.parseInt(cur_customize.getText().toString()),
+                                    CATEGORY_THIRD, icon, "0");
+                            Toast.makeText(AddInYours.this, response, Toast.LENGTH_LONG).show();
                             finish();
                         } else {
                             Toast.makeText(AddInYours.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
@@ -263,5 +292,75 @@ public class AddInYours  extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /*JSON解析*/
+    public void parserJSON (String response) throws JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(response);
+        String status = jsonObject.getString("resultCode");
+        // 登录情况
+        if (status.equals("1")) {
+            SynchronizeResult = "同步成功";
+        }
+    }
+
+    private String AddEvent(final String path, final String eventName, final String startTime, final String endTime,
+                            final String content, final int process, final int category, final int icon, final String timeStamp) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                try {
+                    //HTTP请求操作
+                    // 建立Http连接
+                    String current_url = url + path;
+                    connection = (HttpURLConnection) (new URL(current_url).openConnection());
+                    // 设置访问方法和时间设置
+                    connection.setRequestMethod("POST");          //设置以Post方式提交数据
+                    connection.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                    connection.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
+                    connection.setReadTimeout(8000);
+                    connection.setConnectTimeout(8000);
+                    connection.setUseCaches(false);               //使用Post方式不能使用缓存
+                    connection.connect();
+                    PrintWriter out = new PrintWriter(connection.getOutputStream());
+                    String message = "userId=" + userId + "&process=" + process + "&icon=" + icon +
+                            "&category=" + category + "&eventName=" + eventName +
+                            "&content=" + content + "&startTime=" + startTime +
+                            "&endTime=" + endTime + "&timestamps=" + timeStamp;
+                    out.print(message);  //在输出流中写入参数
+                    out.flush();
+
+                    StringBuilder response = new StringBuilder();
+                    if(connection.getResponseCode() == 200){
+                        // 网页获取json转换为字符串
+                        InputStream inputStream = connection.getInputStream();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+                        parserJSON(response.toString());   //解析服务器返回的数据
+                    }
+                    System.out.println("服务器返回的结果是：" + response.toString());   //打印服务器返回的数据
+
+                } catch (Exception e) {
+                    // 抛出异常
+                    e.printStackTrace();
+                } finally {
+                    // 关闭connection
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        return SynchronizeResult;
     }
 }
