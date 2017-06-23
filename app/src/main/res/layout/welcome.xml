@@ -19,18 +19,18 @@
         android:layout_alignParentRight="true" />
 
     <ImageView
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/welcome_img"
         android:layout_gravity="center"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="110dp"
+        android:layout_marginTop="130dp"
         android:src="@mipmap/dt_text"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="50dp" />
 
     <ImageView
-        android:layout_width="230dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:id="@+id/imageView2"
         android:layout_gravity="center"
         android:src="@mipmap/welcome_text"

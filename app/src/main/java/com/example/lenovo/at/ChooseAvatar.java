@@ -1,7 +1,6 @@
 package com.example.lenovo.at;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,21 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created by lenovo on 2017/6/5.
@@ -41,11 +29,6 @@ public class ChooseAvatar extends AppCompatActivity {
     private ImageView iv_avatar;
     private Menu mMenu;
     private Bitmap photo = null;
-    private TextView userName;
-    private static final String url = "http://172.18.69.108:8080";
-    private String logoutResult = "登出失败";
-    private static int userId = -1;
-//    private Button logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +42,6 @@ public class ChooseAvatar extends AppCompatActivity {
     private void initial() {
         btn_selectAvatar = (Button) findViewById(R.id.btn_selectAvatar);
         iv_avatar = (ImageView) findViewById(R.id.iv_avatar);
-        userName = (TextView) findViewById(R.id.userName);
-//        logout = (Button) findViewById(R.id.logout);
-
-        //获取用户ID
-        SharedPreferences sharedPreferences= getSharedPreferences("User", ChooseAvatar.MODE_PRIVATE);
-        userName.setText(sharedPreferences.getString("userName", "用户名"));
-        userId =sharedPreferences.getInt("userId", -1);
 
         try (FileInputStream fis = openFileInput("avatar.png")) {
             byte[] contents = new byte[fis.available()];
@@ -85,17 +61,6 @@ public class ChooseAvatar extends AppCompatActivity {
                 startActivityForResult(pickIntent, 0);
             }
         });
-
-//        logout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                String a = GetLogoutInfo();
-//                if (a.equals("登出成功")) {
-//                    userName.setText("用户名");
-//                }
-//                Toast.makeText(ChooseAvatar.this, a, Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
 
     @Override
@@ -180,63 +145,5 @@ public class ChooseAvatar extends AppCompatActivity {
             e.printStackTrace();
         }
         finish();
-    }
-
-    /*JSON解析*/
-    public void parserJSON (String response) throws JSONException, IOException {
-        JSONObject jsonObject = new JSONObject(response);
-        String status = jsonObject.getString("resultCode");
-        // 登出情况
-        if (status.equals("1")) {
-            logoutResult = "登出成功";
-        }
-    }
-
-    private String GetLogoutInfo() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                try {
-                    //HTTP请求操作
-                    // 建立Http连接
-                    String current_url = url + "/memo/user/login";
-                    connection = (HttpURLConnection) (new URL(current_url).openConnection());
-                    // 设置访问方法和时间设置
-                    connection.setRequestMethod("GET");          //设置以Post方式提交数据
-                    connection.setDoInput(true);                  //打开输入流，以便从服务器获取数据
-                    connection.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
-                    connection.setReadTimeout(8000);
-                    connection.setConnectTimeout(8000);
-                    connection.connect();
-
-                    StringBuilder response = new StringBuilder();
-                    // 网页获取json转换为字符串
-                    InputStream inputStream = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    parserJSON(response.toString());   //解析服务器返回的数据
-                    System.out.println("服务器返回的结果是：" + response.toString());   //打印服务器返回的数据
-                } catch (Exception e) {
-                    // 抛出异常
-                    e.printStackTrace();
-                } finally {
-                    // 关闭connection
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
-            }
-        });
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
-        return logoutResult;
     }
 }

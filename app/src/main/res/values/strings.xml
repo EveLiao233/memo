@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Memo</string>
+    <string name="app_name">DT</string>
     <string name="noInternet">暂无网络，无法获取当日天气</string>
 </resources>
