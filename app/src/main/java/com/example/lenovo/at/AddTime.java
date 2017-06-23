@@ -1,4 +1,4 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.app.AlarmManager;
 import android.app.Dialog;

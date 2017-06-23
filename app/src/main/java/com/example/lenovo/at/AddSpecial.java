@@ -1,4 +1,4 @@
-﻿package com.example.lenovo.at;
+package com.example.lenovo.at;
 
 import android.content.Context;
 import android.content.Intent;
@@ -57,7 +57,7 @@ public class AddSpecial  extends AppCompatActivity {
     private ScrollView icon_view;
     private RelativeLayout chooseIcon;
     private RelativeLayout addPS;
-    
+
     private String Start;
     private String End;
     private String Thing;

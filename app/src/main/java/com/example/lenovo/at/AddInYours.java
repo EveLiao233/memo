@@ -1,5 +1,4 @@
-﻿package com.example.lenovo.at;
-
+package com.example.lenovo.at;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +14,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +24,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 /**
  * Created by L on 2016/12/13.
  */
@@ -60,7 +56,7 @@ public class AddInYours  extends AppCompatActivity {
     private static final String url = "http://172.18.69.108:8080";
     private String SynchronizeResult = "同步失败";
     private int userId = -1;
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,7 +133,7 @@ public class AddInYours  extends AppCompatActivity {
         thing_customize = (EditText)findViewById(R.id.thing_customize);
         start_customize = (EditText)findViewById(R.id.start_customize);
         customized_remarks = (EditText) findViewById(R.id.customized_remarks);
-        cur_customize = (EditText)findViewById(R.id.cur_customize); 
+        cur_customize = (EditText)findViewById(R.id.cur_customize);
         end_customize = (EditText)findViewById(R.id.end_customize);
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
 
