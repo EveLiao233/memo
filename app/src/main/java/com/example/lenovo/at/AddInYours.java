@@ -29,10 +29,8 @@ public class AddInYours  extends AppCompatActivity {
 
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
-    private boolean hideIconIsChecked = false;
-    private boolean hidePSIsChecked = false;
-    private ImageView hideIcon;
-    private ImageView hidePS;
+    private boolean iconIsChecked = false;
+    private ImageView hindIcon;
     private ScrollView icon_view;
     private RelativeLayout chooseIcon;
     private RelativeLayout addPS;
