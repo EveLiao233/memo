@@ -145,7 +145,7 @@
         android:layout_height="0dp"
         android:id="@+id/icon_view"
         android:layout_weight="1"
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@color/shadow">
 
         <LinearLayout

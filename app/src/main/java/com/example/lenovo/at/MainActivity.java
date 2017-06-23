@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -52,13 +53,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lenovo on 2016/12/8.
@@ -76,15 +80,13 @@ public class MainActivity extends AppCompatActivity {
     private ListView main_list;
     private myDB mydb = new myDB(this, DB_NAME, null, DB_VERSION);
     private List<Affair> AffairList = new ArrayList<>();
+    private List<Affair> AffairList1 = new ArrayList<>();
+    private List<Affair> AffairList2 = new ArrayList<>();
+    private List<Affair> AffairList3 = new ArrayList<>();
     private AffairAdapter affairAdapter;
 
-
-    private String things = "";
-    //Intent intent = new Intent("STATICACTION");
-    Boolean isInYours = true;
-
     // 网络服务地址
-    private static final String url = "http://apistore.baidu.com/microservice/weather";
+    private static final String url_weather = "http://apistore.baidu.com/microservice/weather";
     private ConnectivityManager connManager;
     private NetworkInfo networkInfo;
     private static final int UPDATE_CONTENT = 0;
@@ -92,19 +94,64 @@ public class MainActivity extends AppCompatActivity {
     private String w = "";
     private ImageView iv_avatar;
 
+    private static final String url = "http://172.18.69.108:8080";
+    private String SynchronizeResult = "同步失败";
+    private int userId = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-        handler.post(myRunnable);
+
+        //获取用户ID
+        SharedPreferences sharedPreferences= getSharedPreferences("User", Context.MODE_PRIVATE);
+        userId =sharedPreferences.getInt("userId", -1);
+        System.out.println("MainActivity用户ID为：" + userId);
 
         initialToolbar();
         initialAvatar();
 
         main_list = (ListView) findViewById(R.id.main_list);
+
+        //从服务器的数据库中导入数据
+        EventProcess("/memo/user/getEventByUserId", "");
+        //从本地数据库中导入数据
+        AffairList1 = mydb.getAllData();  //获取全部数据，存入list中
+
+        //将服务器的数据导入到本地数据库
+        Set<Affair> affairs = new HashSet<Affair>();
+        if (AffairList1 != null)
+            affairs.addAll(AffairList1);
+        if (AffairList2 != null) {
+            affairs.addAll(AffairList2);
+            System.out.println("服务器导入数据成功");
+        }
+        List<Affair> affairs_all = new ArrayList<>(affairs);
+        for (int i = 0; i < affairs_all.size(); i++) {
+            mydb.insertOneData(affairs_all.get(i));
+        }
+        //将本地数据库中未导入的数据同步
+        if (AffairList2 != null) {
+            affairs_all.removeAll(AffairList2);  //删除已同步的数据
+            for (int i = 0; i < affairs_all.size(); i++) {
+                System.out.println(affairs_all.get(i).getThing());
+                String message = "userId=" + userId + "&process=" + affairs_all.get(i).getProcess() +
+                        "&icon=" + affairs_all.get(i).getIcon() +
+                        "&category=" +  affairs_all.get(i).getCategory() +
+                        "&eventName=" + affairs_all.get(i).getThing() +
+                        "&content=" + affairs_all.get(i).getRemarks() +
+                        "&startTime=" + affairs_all.get(i).getStart_time() +
+                        "&endTime=" + affairs_all.get(i).getEnd_time() +
+                        "&timestamps=" + affairs_all.get(i).getTimeStamp();
+                EventProcess("/memo/user/addEvent", message);
+                Toast.makeText(MainActivity.this, SynchronizeResult, Toast.LENGTH_LONG).show();
+            }
+        }
+
         AffairList = mydb.getAllData();  //获取全部数据，存入list中
         affairAdapter = new AffairAdapter(getApplicationContext(), AffairList);
         main_list.setAdapter(affairAdapter);
+        handler.post(myRunnable);
 
         //短按点击事件(1214)
         main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -165,6 +212,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         // 从数据库中删除
                         mydb.deleteOneData(AffairList.get(position));
+                        // 从服务器数据库中删除
+                        EventProcess("/memo/user/deleteEventByUserId_EventName", AffairList.get(position).getThing());
+                        Toast.makeText(MainActivity.this, SynchronizeResult, Toast.LENGTH_LONG).show();
                         // 从链表中删除
                         AffairList.remove(position);
                         affairAdapter.notifyDataSetChanged();
@@ -203,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     //HTTP请求操作
                     // 建立Http连接
                     Log.i("key", "Begin the connection");
-                    String current_url = url + "?cityname=guangzhou";
+                    String current_url = url_weather + "?cityname=guangzhou";
                     connection = (HttpURLConnection) (new URL(current_url).openConnection());
                     // 设置访问方法和时间设置
                     connection.setRequestMethod("GET");
@@ -220,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                     while ((line = reader.readLine()) != null) {
                         response.append(line);
                     }
-                    w = parserJSON(response.toString());
+                    w = parserJSON_weather(response.toString());
                 } catch (Exception e) {
                     // 抛出异常
                     e.printStackTrace();
@@ -241,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*JSON解析*/
-    public String parserJSON (String response) throws JSONException, IOException {
+    public String parserJSON_weather (String response) throws JSONException, IOException {
         String weather = new String();
         JSONObject jsonObject = new JSONObject(response);
         String status = jsonObject.getString("errMsg");
@@ -252,6 +302,106 @@ public class MainActivity extends AppCompatActivity {
             return weather;
         }
         return null;
+    }
+
+    //同步删除服务器数据库中的数据
+    public void parserJSON (String response) throws JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(response);
+        String status = jsonObject.getString("resultCode");
+        if (status.equals("1")) {
+            SynchronizeResult = "同步成功";
+        }
+    }
+
+    //解析从服务器获取的事件
+    public void parserJSONEvent (String response) throws JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(response);
+        String status = jsonObject.getString("resultCode");
+        // 登录情况
+        if (status.equals("1")) {
+            JSONArray arr = jsonObject.getJSONArray("data");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject event = (JSONObject) arr.get(i);
+                int event_icon = event.getInt("icon");
+                int event_category = event.getInt("category");
+                String event_name = event.getString("eventName");
+                String event_remark = event.getString("content");
+                String event_start = event.getString("startTime");
+                String event_end = event.getString("endTime");
+                long event_timeStamp = Long.parseLong(event.getString("timestamps"));
+                int event_process = event.getInt("process");
+                Affair affair = new Affair(event_name, event_process, event_start, event_end,
+                        event_category, event_icon, event_remark, event_timeStamp);
+                AffairList2.add(affair);
+            }
+        }
+    }
+
+    private String EventProcess(final String path, final String eventName) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                try {
+                    //HTTP请求操作
+                    // 建立Http连接
+                    String current_url = url + path;
+                    connection = (HttpURLConnection) (new URL(current_url).openConnection());
+                    // 设置访问方法和时间设置
+                    connection.setRequestMethod("POST");          //设置以Post方式提交数据
+                    connection.setDoInput(true);                  //打开输入流，以便从服务器获取数据
+                    connection.setDoOutput(true);                 //打开输出流，以便向服务器提交数据
+                    connection.setReadTimeout(8000);
+                    connection.setConnectTimeout(8000);
+                    connection.setUseCaches(false);               //使用Post方式不能使用缓存
+                    connection.connect();
+                    PrintWriter out = new PrintWriter(connection.getOutputStream());
+                    String message = "";
+                    if (eventName.isEmpty()) {
+                        message = "userId=" + userId;
+                    } else if (eventName.contains("userId")) {
+                        message = eventName;
+                    } else {
+                        message = "userId=" + userId + "&eventName=" + eventName;
+                    }
+                    out.print(message);  //在输出流中写入参数
+                    out.flush();
+
+                    StringBuilder response = new StringBuilder();
+                    if(connection.getResponseCode() == 200){
+                        // 网页获取json转换为字符串
+                        InputStream inputStream = connection.getInputStream();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+                        if (eventName.isEmpty()) {
+                            parserJSONEvent(response.toString());   //解析服务器返回的数据
+                        } else {
+                            parserJSON(response.toString());   //解析服务器返回的数据
+                        }
+                    }
+                    System.out.println("服务器返回的结果是：" + response.toString());   //打印服务器返回的数据
+
+                } catch (Exception e) {
+                    // 抛出异常
+                    e.printStackTrace();
+                } finally {
+                    // 关闭connection
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        return SynchronizeResult;
     }
 
     //处理标题栏
