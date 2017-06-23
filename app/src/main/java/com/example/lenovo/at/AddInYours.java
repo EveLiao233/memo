@@ -199,10 +199,29 @@ public class AddInYours  extends AppCompatActivity {
         });
     }
 
+
+    // 分享
+    public void share() {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        String shareText = "事项名称：" + thing_customize.getText().toString() + "\n"
+                +"开始时间：" + start_customize.getText().toString() + "\n"
+                +"结束时间：" + end_customize.getText().toString() + "\n"
+                +"备注：" + customized_remarks.getText().toString() + "\n"
+                +"——这是一条来自Memo的分享";
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(sendIntent, "???"));
+    }
+
     //处理标题栏
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_menu, menu);
+        mMenu = menu;
+        if (bl == null) {
+            mMenu.findItem(R.id.share_menu).setVisible(false);
+        }
         return true;
     }
     @Override
@@ -230,10 +249,13 @@ public class AddInYours  extends AppCompatActivity {
                             finish();
                         } else {
                             Toast.makeText(AddInYours.this, "事件名称重复啦，请核查", Toast.LENGTH_LONG).show();
-                        }
+                       }
                     }
-                    break;
                 }
+                break;
+            case R.id.share_menu:
+                share();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

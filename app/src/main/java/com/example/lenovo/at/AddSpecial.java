@@ -51,6 +51,7 @@ public class AddSpecial  extends AppCompatActivity {
     private String Thing;
     private int Process;
     private EditText special_remarks;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -283,10 +284,28 @@ public class AddSpecial  extends AppCompatActivity {
         return 0;
     }
 
+    // 分享
+    public void share() {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        String shareText = "事项名称：" + Thing + "\n"
+                +"开始时间：" + Start + "\n"
+                +"结束时间：" + End + "\n"
+                +"备注：" + special_remarks.getText().toString() + "\n"
+                +"——这是一条来自Memo的分享";
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(sendIntent, "???"));
+    }
+
     //处理标题栏
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_menu, menu);
+        mMenu = menu;
+        if (bl.getInt("icon") == -1) {
+            mMenu.findItem(R.id.share_menu).setVisible(false);
+        }
         return true;
     }
     @Override
@@ -304,6 +323,9 @@ public class AddSpecial  extends AppCompatActivity {
                     }
                 }
                 finish();
+                break;
+            case R.id.share_menu:
+                share();
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -62,6 +62,7 @@ public class AddTime extends AppCompatActivity {
 
     private int mHour;
     private int mMinute;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -351,11 +352,28 @@ public class AddTime extends AppCompatActivity {
         return 0;
     }
 
+    // 分享
+    public void share() {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        String shareText = "事项名称：" + thing_time.getText().toString() + "\n"
+                +"开始时间：" + pick_startTime.getText().toString() + "\n"
+                +"结束时间：" + pick_endTime.getText().toString() + "\n"
+                +"备注：" + time_remarks.getText().toString() + "\n"
+                +"——这是一条来自Memo的分享";
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(sendIntent, "???"));
+    }
 
     //处理标题栏
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_menu, menu);
+        mMenu = menu;
+        if (bl == null) {
+            mMenu.findItem(R.id.share_menu).setVisible(false);
+        }
         return true;
     }
     @Override
@@ -385,7 +403,10 @@ public class AddTime extends AppCompatActivity {
                         }
                     }
                     break;
-                }
+            case R.id.share_menu:
+                share();
+                break;
+        }
         }
         return super.onOptionsItemSelected(item);
     }
