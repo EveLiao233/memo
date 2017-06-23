@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -343,6 +343,11 @@ public class AddDDL extends AppCompatActivity {
                 } else {
                     if (thing_ddl.getText().toString().isEmpty()) {
                         Toast.makeText(AddDDL.this, "事件名称为空，请完善", Toast.LENGTH_LONG).show();
+                    } else if (pick_endDate.getText().toString().contains("结束日期")
+                            || pick_startDate.getText().toString().contains("开始日期")){
+                        Toast.makeText(AddDDL.this, "请输入时间", Toast.LENGTH_LONG).show();
+                    } else if (str2timeStamp(pick_endDate.getText().toString()) <= str2timeStamp(pick_startDate.getText().toString())){
+                        Toast.makeText(AddDDL.this, "结束日期应在开始日期之后", Toast.LENGTH_LONG).show();
                     } else {
                         int pro = CalculatePro();
                         if (mydb.insertOneData(new Affair(thing_ddl.getText().toString(), pro, pick_startDate.getText().toString(),

@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -336,6 +336,11 @@ public class AddTime extends AppCompatActivity {
                 } else {
                     if (thing_time.getText().toString().isEmpty()) {
                         Toast.makeText(AddTime.this, "事件名称为空，请完善", Toast.LENGTH_LONG).show();
+                    } else if (pick_endTime.getText().toString().contains("选择结束时间")
+                            || pick_endTime.getText().toString().contains("选择开始时间")){
+                        Toast.makeText(AddTime.this, "请输入时间", Toast.LENGTH_LONG).show();
+                    } else if(str2timeStamp(pick_endTime.getText().toString()) <= str2timeStamp(pick_startTime.getText().toString())) {
+                        Toast.makeText(AddTime.this, "结束时间应在开始时间之后", Toast.LENGTH_LONG).show();
                     } else {
                         int pro = CalculatePro();
                         if (mydb.insertOneData(new Affair(thing_time.getText().toString(), pro, pick_startTime.getText().toString(),

@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -184,6 +184,14 @@ public class AddInYours  extends AppCompatActivity {
                 } else {
                     if (thing_customize.getText().toString().isEmpty()) {
                         Toast.makeText(AddInYours.this, "事件名称为空，请完善", Toast.LENGTH_LONG).show();
+                    } else if (start_customize.getText().toString().isEmpty()
+                            || end_customize.getText().toString().isEmpty()//contains("结束")
+                            || cur_customize.getText().toString().isEmpty()/*.contains("现在")*/) {
+                        Toast.makeText(AddInYours.this, "请输入对应数值", Toast.LENGTH_LONG).show();
+                    } else if (Integer.valueOf(end_customize.getText().toString()) <= Integer.valueOf(start_customize.getText().toString())
+                            || Integer.valueOf(end_customize.getText().toString()) < Integer.valueOf(cur_customize.getText().toString())
+                            || Integer.valueOf(cur_customize.getText().toString()) < Integer.valueOf(start_customize.getText().toString())){
+                        Toast.makeText(AddInYours.this, "输入数据不合理", Toast.LENGTH_LONG).show();
                     } else {
                         if (mydb.insertOneData(new Affair(thing_customize.getText().toString(), Integer.parseInt(cur_customize.getText().toString()),
                                 start_customize.getText().toString(), end_customize.getText().toString(), CATEGORY_THIRD, icon))) {
