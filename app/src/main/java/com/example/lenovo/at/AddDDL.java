@@ -20,7 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import java.text.ParseException;
+import java.text.ParseException; 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,13 +31,14 @@ import java.util.Date;
  */
 public class AddDDL extends AppCompatActivity {
     private static final String DB_NAME = "myDB.db";
-    private static final String TABLE_NAME = "BirthNote";
+    private static final String TABLE_NAME = "Memo";
     private static final int DB_VERSION = 1;
     private myDB mydb;
 
     private static int CATEGORY_FIRST = 0;
 
     private EditText thing_ddl;
+    private EditText ddl_remarks;
     private Button pick_startDate = null;
     private Button pick_endDate = null;
     private Intent intent;
@@ -45,17 +46,20 @@ public class AddDDL extends AppCompatActivity {
 
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
-    private boolean iconIsChecked = false;
-    private ImageView hindIcon;
+    private boolean hideIconIsChecked = false;
+    private boolean hidePSIsChecked = false;
+    private ImageView hideIcon;
+    private ImageView hidePS;
     private ScrollView icon_view;
-    private RelativeLayout rela;
+    private RelativeLayout chooseIcon;
+    private RelativeLayout addPS;
 
     private static final int START_DATAPICK = 0;
     private static final int START_DATE_DIALOG = 1;
     private static final int END_DATAPICK = 4;
     private static final int END_DATE_DIALOG = 5;
 
-
+    private Calendar calendar = Calendar.getInstance();
     private int mYear;
     private int mMonth;
     private int mDay;
@@ -76,6 +80,7 @@ public class AddDDL extends AppCompatActivity {
             //thing_ddl.setVisibility(View.GONE);
             pick_startDate.setText(bl.getString("start"));
             pick_endDate.setText(bl.getString("end"));
+           ddl_remarks.setText(bl.getString("remarks"));
             thing_ddl.setText(bl.getString("thing"));
             thing_ddl.setEnabled(false);
             icon = bl.getInt("icon");
@@ -137,13 +142,17 @@ public class AddDDL extends AppCompatActivity {
      */
     private void initializeViews() {
         thing_ddl = (EditText) findViewById(R.id.thing_ddl);
+        ddl_remarks = (EditText) findViewById(R.id.ddl_remarks);
         pick_startDate = (Button) findViewById(R.id.pick_startDate);
         pick_endDate = (Button) findViewById(R.id.pick_endDate);
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
 
-        hindIcon = (ImageView) findViewById(R.id.hindIcon);
+        hideIcon = (ImageView) findViewById(R.id.hideIcon);
+        hidePS = (ImageView) findViewById(R.id.hidePS);
         icon_view = (ScrollView) findViewById(R.id.icon_view);
-        rela = (RelativeLayout) findViewById(R.id.rela);
+        chooseIcon = (RelativeLayout) findViewById(R.id.chooseIcon);
+        addPS = (RelativeLayout) findViewById(R.id.addPS);
+
         myImg.add((ImageView)findViewById(R.id.img1));
         myImg.add((ImageView)findViewById(R.id.img2));
         myImg.add((ImageView)findViewById(R.id.img3));
@@ -199,21 +208,46 @@ public class AddDDL extends AppCompatActivity {
         });
 
 
-        rela.setOnClickListener(new View.OnClickListener() {
+
+        chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iconIsChecked) {
+                if (hideIconIsChecked) {
                     icon_view.setVisibility(View.GONE);
-                    hindIcon.setImageResource(R.mipmap.triangle_right);
-                    iconIsChecked = false;
+                    hideIcon.setImageResource(R.mipmap.triangle_right);
+                    hideIconIsChecked = false;
                 } else {
                     icon_view.setVisibility(View.VISIBLE);
-                    hindIcon.setImageResource(R.mipmap.triangle_down);
-                    iconIsChecked = true;
+                    hideIcon.setImageResource(R.mipmap.triangle_down);
+                    hideIconIsChecked = true;
+                    if (hidePSIsChecked) {
+                        hidePSIsChecked = false;
+                        ddl_remarks.setVisibility(View.GONE);
+                        hidePS.setImageResource(R.mipmap.triangle_right);
+                    }
                 }
             }
         });
 
+        addPS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hidePSIsChecked) {
+                    ddl_remarks.setVisibility(View.GONE);
+                    hidePS.setImageResource(R.mipmap.triangle_right);
+                    hidePSIsChecked = false;
+                } else {
+                    ddl_remarks.setVisibility(View.VISIBLE);
+                    hidePS.setImageResource(R.mipmap.triangle_down);
+                    hidePSIsChecked = true;
+                    if (hideIconIsChecked) {
+                        icon_view.setVisibility(View.GONE);
+                        hideIcon.setImageResource(R.mipmap.triangle_right);
+                        hideIconIsChecked = false;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -333,6 +367,7 @@ public class AddDDL extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.add:
                 if (bl != null) {

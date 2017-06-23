@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class myDB extends SQLiteOpenHelper {
     private static final String DB_NAME = "myDB.db";
-    private static final String TABLE_NAME = "BirthNote";
+    private static final String TABLE_NAME = "Memo";
     private static final int DB_VERSION = 1;
     private static int CATEGORY_THIRD = 2;
 
@@ -24,8 +24,14 @@ public class myDB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE if not exists " + TABLE_NAME +
-                " (thing TEXT PRIMARY KEY, process INTEGER, start_time TEXT, end_time TEXT, category INTEGER, icon INTEGER)";
+        String CREATE_TABLE = "create table if not exists " + TABLE_NAME +
+                "( [thing] TEXT NOT NULL PRIMARY KEY, " +
+                "  [process] INTEGER NOT NULL," +
+                "  [start_time] TEXT NOT NULL," +
+                "  [end_time] TEXT NOT NULL," +
+                "  [category] INTEGER NOT NULL," +
+                "  [icon] INTEGER NOT NULL," +
+                "  [remarks] TEXT NOT NULL";
         db.execSQL(CREATE_TABLE);
     }
     @Override
@@ -44,6 +50,7 @@ public class myDB extends SQLiteOpenHelper {
             cv.put("end_time", affair.getEnd_time());
             cv.put("category", affair.getCategory());
             cv.put("icon", affair.getIcon());
+            cv.put("remarks", affair.getRemarks());
             db.insert(TABLE_NAME, null, cv);
             db.close();
             return true;
@@ -66,6 +73,7 @@ public class myDB extends SQLiteOpenHelper {
         cv.put("end_time", affair.getEnd_time());
         cv.put("process", affair.getProcess());
         cv.put("icon", affair.getIcon());
+        cv.put("remarks", affair.getRemarks());
         long a = db.update(TABLE_NAME, cv, "thing=" + '"' + affair.getThing() +'"', null);
         db.close();
         return a;
@@ -85,6 +93,7 @@ public class myDB extends SQLiteOpenHelper {
             AffairList.get(i).setEnd_time(cursor.getString(cursor.getColumnIndex("end_time")));
             AffairList.get(i).setCategory(cursor.getInt(cursor.getColumnIndex("category")));
             AffairList.get(i).setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
+            AffairList.get(i).setRemarks(cursor.getString(cursor.getColumnIndex("remarks")));
             cursor.moveToNext();
         }
         return AffairList;
@@ -93,8 +102,14 @@ public class myDB extends SQLiteOpenHelper {
     //查询数据库中的所有数据
     public List<Affair> getAllData() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor results = db.query(TABLE_NAME, null, null, null, null, null, null);
+        Cursor results = db.query(TABLE_NAME, null, null, null, null, null, null,null);
         return ConvertToAffair(results);
+    }
+
+    // 查询单个id
+    public Cursor getTask(String thing) {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery("select * from " + TABLE_NAME + " where thing = ?", new String[]{thing});
     }
 }
 

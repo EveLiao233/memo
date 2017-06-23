@@ -32,13 +32,15 @@ public class AddInYours  extends AppCompatActivity {
     private boolean iconIsChecked = false;
     private ImageView hindIcon;
     private ScrollView icon_view;
-    private RelativeLayout rela;
+    private RelativeLayout chooseIcon;
+    private RelativeLayout addPS;
 
     private static final String DB_NAME = "myDB.db";
     private static final String TABLE_NAME = "BirthNote";
     private static final int DB_VERSION = 1;
     private myDB mydb;
-    
+    private Menu mMenu;
+
     private static int CATEGORY_THIRD = 2;
     
     @Override
@@ -56,6 +58,7 @@ public class AddInYours  extends AppCompatActivity {
             //thing_customize.setVisibility(View.GONE);
             start_customize.setText(bl.getString("start"));
             end_customize.setText(bl.getString("end"));
+            customized_remarks.setText(bl.getString("remarks"));
             thing_customize.setText(bl.getString("thing"));
             thing_customize.setEnabled(false);
             cur_customize.setText(bl.getString("process"));
@@ -111,13 +114,17 @@ public class AddInYours  extends AppCompatActivity {
     private void initializeViews() {
         thing_customize = (EditText)findViewById(R.id.thing_customize);
         start_customize = (EditText)findViewById(R.id.start_customize);
+        customized_remarks = (EditText) findViewById(R.id.customized_remarks);
         cur_customize = (EditText)findViewById(R.id.cur_customize); 
         end_customize = (EditText)findViewById(R.id.end_customize);
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
 
-        hindIcon = (ImageView) findViewById(R.id.hindIcon);
+        hideIcon = (ImageView) findViewById(R.id.hideIcon);
+        hidePS = (ImageView) findViewById(R.id.hidePS);
         icon_view = (ScrollView) findViewById(R.id.icon_view);
-        rela = (RelativeLayout) findViewById(R.id.rela);
+        chooseIcon = (RelativeLayout) findViewById(R.id.chooseIcon);
+        addPS = (RelativeLayout) findViewById(R.id.addPS);
+
         myImg.add((ImageView)findViewById(R.id.img1));
         myImg.add((ImageView)findViewById(R.id.img2));
         myImg.add((ImageView)findViewById(R.id.img3));
@@ -150,21 +157,46 @@ public class AddInYours  extends AppCompatActivity {
         for (ImageView i : myImg)
             i.setOnClickListener(myImgListener);
 
-        rela.setOnClickListener(new View.OnClickListener() {
+
+        chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iconIsChecked) {
+                if (hideIconIsChecked) {
                     icon_view.setVisibility(View.GONE);
-                    hindIcon.setImageResource(R.mipmap.triangle_right);
-                    iconIsChecked = false;
+                    hideIcon.setImageResource(R.mipmap.triangle_right);
+                    hideIconIsChecked = false;
                 } else {
                     icon_view.setVisibility(View.VISIBLE);
-                    hindIcon.setImageResource(R.mipmap.triangle_down);
-                    iconIsChecked = true;
+                    hideIcon.setImageResource(R.mipmap.triangle_down);
+                    hideIconIsChecked = true;
+                    if (hidePSIsChecked) {
+                        hidePSIsChecked = false;
+                        customized_remarks.setVisibility(View.GONE);
+                        hidePS.setImageResource(R.mipmap.triangle_right);
+                    }
                 }
             }
         });
 
+        addPS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hidePSIsChecked) {
+                    customized_remarks.setVisibility(View.GONE);
+                    hidePS.setImageResource(R.mipmap.triangle_right);
+                    hidePSIsChecked = false;
+                } else {
+                    customized_remarks.setVisibility(View.VISIBLE);
+                    hidePS.setImageResource(R.mipmap.triangle_down);
+                    hidePSIsChecked = true;
+                    if (hideIconIsChecked) {
+                        icon_view.setVisibility(View.GONE);
+                        hideIcon.setImageResource(R.mipmap.triangle_right);
+                        hideIconIsChecked = false;
+                    }
+                }
+            }
+        });
     }
 
     //处理标题栏

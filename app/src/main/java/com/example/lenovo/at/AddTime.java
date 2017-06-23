@@ -47,9 +47,13 @@ public class AddTime extends AppCompatActivity {
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
     private boolean iconIsChecked = false;
-    private ImageView hindIcon;
+    private boolean hidePSIsChecked = false;
+    private ImageView hideIcon;
+    private ImageView hidePS;
     private ScrollView icon_view;
-    private RelativeLayout rela;
+    private RelativeLayout chooseIcon;
+    private RelativeLayout addPS;
+    private EditText time_remarks;
 
     private static final int START_TIMEPICK = 0;
     private static final int START_TIME_DIALOG = 1;
@@ -74,6 +78,7 @@ public class AddTime extends AppCompatActivity {
             pick_startTime.setText(bl.getString("start"));
             pick_endTime.setText(bl.getString("end"));
             thing_time.setText(bl.getString("thing"));
+            time_remarks.setText(bl.getString("remarks"));
             thing_time.setEnabled(false);
             icon = bl.getInt("icon");
         }
@@ -136,6 +141,7 @@ public class AddTime extends AppCompatActivity {
         pick_startTime = (Button)findViewById(R.id.pick_startTime);
         pick_endTime = (Button)findViewById(R.id.pick_endTime);
         thing_time = (EditText)findViewById(R.id.thing_time);
+        time_remarks = (EditText)findViewById(R.id.time_remarks);
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
 
         pick_startTime.setOnClickListener(new View.OnClickListener() {
@@ -160,9 +166,12 @@ public class AddTime extends AppCompatActivity {
             }
         });
 
-        hindIcon = (ImageView) findViewById(R.id.hindIcon);
+        hideIcon = (ImageView) findViewById(R.id.hideIcon);
+        hidePS = (ImageView) findViewById(R.id.hidePS);
         icon_view = (ScrollView) findViewById(R.id.icon_view);
-        rela = (RelativeLayout) findViewById(R.id.rela);
+        chooseIcon = (RelativeLayout) findViewById(R.id.chooseIcon);
+        addPS = (RelativeLayout) findViewById(R.id.addPS);
+
         myImg.add((ImageView)findViewById(R.id.img1));
         myImg.add((ImageView)findViewById(R.id.img2));
         myImg.add((ImageView)findViewById(R.id.img3));
@@ -195,17 +204,42 @@ public class AddTime extends AppCompatActivity {
         for (ImageView i : myImg)
             i.setOnClickListener(myImgListener);
 
-        rela.setOnClickListener(new View.OnClickListener() {
+        chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iconIsChecked) {
+                if (hideIconIsChecked) {
                     icon_view.setVisibility(View.GONE);
-                    hindIcon.setImageResource(R.mipmap.triangle_right);
-                    iconIsChecked = false;
+                    hideIcon.setImageResource(R.mipmap.triangle_right);
+                    hideIconIsChecked = false;
                 } else {
                     icon_view.setVisibility(View.VISIBLE);
-                    hindIcon.setImageResource(R.mipmap.triangle_down);
-                    iconIsChecked = true;
+                    hideIcon.setImageResource(R.mipmap.triangle_down);
+                    hideIconIsChecked = true;
+                    if (hidePSIsChecked) {
+                        hidePSIsChecked = false;
+                        time_remarks.setVisibility(View.GONE);
+                        hidePS.setImageResource(R.mipmap.triangle_right);
+                    }
+                }
+            }
+        });
+
+        addPS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hidePSIsChecked) {
+                    time_remarks.setVisibility(View.GONE);
+                    hidePS.setImageResource(R.mipmap.triangle_right);
+                    hidePSIsChecked = false;
+                } else {
+                    time_remarks.setVisibility(View.VISIBLE);
+                    hidePS.setImageResource(R.mipmap.triangle_down);
+                    hidePSIsChecked = true;
+                    if (hideIconIsChecked) {
+                        icon_view.setVisibility(View.GONE);
+                        hideIcon.setImageResource(R.mipmap.triangle_right);
+                        hideIconIsChecked = false;
+                    }
                 }
             }
         });

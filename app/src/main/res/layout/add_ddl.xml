@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:text="更改事项"
+                android:text="选择事项"
                 android:background="@drawable/shape"
                 style="@style/my_button"
                 android:layout_marginLeft="15dp"
@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:text="更改StartTime"
+                android:text="选择StartTime"
                 android:background="@drawable/shape"
                 style="@style/my_button"
                 android:layout_marginLeft="15dp"
@@ -82,7 +82,7 @@
             <TextView
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:text="更改EndTime"
+                android:text="选择EndTime"
                 android:background="@drawable/shape"
                 style="@style/my_button"
                 android:layout_marginLeft="15dp"
@@ -97,7 +97,6 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-
     </LinearLayout>
 
     <RelativeLayout
@@ -105,7 +104,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/shadow"
-        android:id="@+id/rela">
+        android:id="@+id/chooseIcon">
 
         <TextView
             android:layout_width="wrap_content"
@@ -122,7 +121,7 @@
         <ImageView
             android:layout_width="23dp"
             android:layout_height="23dp"
-            android:id="@+id/hindIcon"
+            android:id="@+id/hideIcon"
             android:src="@mipmap/triangle_right"
             android:layout_centerVertical="true"
             android:layout_alignParentBottom="false"
@@ -137,7 +136,7 @@
         android:id="@+id/icon_view"
         android:layout_weight="1"
         android:background="@color/shadow"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:orientation="vertical"
@@ -535,5 +534,52 @@
             </TableLayout>
         </LinearLayout>
     </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="添加备注"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:background="@color/shadow"
+        android:id="@+id/addPS">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加备注"
+            android:id="@+id/textView10"
+            android:paddingTop="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:paddingBottom="10dp"
+            android:paddingStart="10dp" />
+
+        <ImageView
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:id="@+id/hidePS"
+            android:src="@mipmap/triangle_right"
+            android:layout_centerVertical="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp" />
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/ddl_remarks"
+        android:background="@color/shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:hint="请在这里输入备注"
+        style="@style/my_button"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        android:gravity="top|left"
+        android:scrollbars="vertical"
+        android:layout_margin="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp" />
 
 </LinearLayout>

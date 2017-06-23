@@ -1,4 +1,4 @@
-package com.example.lenovo.at;
+﻿package com.example.lenovo.at;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,15 +38,19 @@ public class AddSpecial  extends AppCompatActivity {
 
     private ArrayList<ImageView> myImg = new ArrayList<ImageView>();
     private int icon = 1;
-    private boolean iconIsChecked = false;
-    private ImageView hindIcon;
+    private boolean hideIconIsChecked = false;
+    private boolean hidePSIsChecked = false;
+    private ImageView hideIcon;
+    private ImageView hidePS;
     private ScrollView icon_view;
-    private RelativeLayout rela;
+    private RelativeLayout chooseIcon;
+    private RelativeLayout addPS;
     
     private String Start;
     private String End;
     private String Thing;
     private int Process;
+    private EditText special_remarks;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +64,8 @@ public class AddSpecial  extends AppCompatActivity {
         bl = intent.getExtras();
         if (bl.getInt("icon") != -1) {
             icon = bl.getInt("icon");
+            special_remarks.setText(bl.getString("remarks"));
+            special_remarks.setSelection(special_remarks.getText().length());
         }
         myImg.get(icon - 1).setBackground(getResources().getDrawable(R.drawable.shadow));
     }
@@ -111,10 +117,14 @@ public class AddSpecial  extends AppCompatActivity {
     private void initializeViews(){
         mydb = new myDB(this, DB_NAME, null, DB_VERSION);
         
+        special_remarks = (EditText) findViewById(R.id.special_remarks);
 
-        hindIcon = (ImageView) findViewById(R.id.hindIcon);
+        hideIcon = (ImageView) findViewById(R.id.hideIcon);
+        hidePS = (ImageView) findViewById(R.id.hidePS);
         icon_view = (ScrollView) findViewById(R.id.icon_view);
-        rela = (RelativeLayout) findViewById(R.id.rela);
+        chooseIcon = (RelativeLayout) findViewById(R.id.chooseIcon);
+        addPS = (RelativeLayout) findViewById(R.id.addPS);
+
         myImg.add((ImageView)findViewById(R.id.img1));
         myImg.add((ImageView)findViewById(R.id.img2));
         myImg.add((ImageView)findViewById(R.id.img3));
@@ -147,20 +157,46 @@ public class AddSpecial  extends AppCompatActivity {
         for (ImageView i : myImg)
             i.setOnClickListener(myImgListener);
 
-        rela.setOnClickListener(new View.OnClickListener() {
+        chooseIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iconIsChecked) {
+                if (hideIconIsChecked) {
                     icon_view.setVisibility(View.GONE);
-                    hindIcon.setImageResource(R.mipmap.triangle_right);
-                    iconIsChecked = false;
+                    hideIcon.setImageResource(R.mipmap.triangle_right);
+                    hideIconIsChecked = false;
                 } else {
                     icon_view.setVisibility(View.VISIBLE);
-                    hindIcon.setImageResource(R.mipmap.triangle_down);
-                    iconIsChecked = true;
+                    hideIcon.setImageResource(R.mipmap.triangle_down);
+                    hideIconIsChecked = true;
+                    if (hidePSIsChecked) {
+                        hidePSIsChecked = false;
+                        special_remarks.setVisibility(View.GONE);
+                        hidePS.setImageResource(R.mipmap.triangle_right);
+                    }
                 }
             }
         });
+
+        addPS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hidePSIsChecked) {
+                    special_remarks.setVisibility(View.GONE);
+                    hidePS.setImageResource(R.mipmap.triangle_right);
+                    hidePSIsChecked = false;
+                } else {
+                    special_remarks.setVisibility(View.VISIBLE);
+                    hidePS.setImageResource(R.mipmap.triangle_down);
+                    hidePSIsChecked = true;
+                    if (hideIconIsChecked) {
+                        icon_view.setVisibility(View.GONE);
+                        hideIcon.setImageResource(R.mipmap.triangle_right);
+                        hideIconIsChecked = false;
+                    }
+                }
+            }
+        });
+
 
     }
 
